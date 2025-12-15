@@ -2,7 +2,7 @@ import Queue from "bull";
 
 export const movieQueue = new Queue(
   "movie-queue",
-  "https://enormous-bug-20629.upstash.io"
+  "rediss://default:AVCVAAIncDE0Yjg4YTNiMWE2NTE0NDc2YTkzZWIyZGIwYjMwYmRmMHAxMjA2Mjk@enormous-bug-20629.upstash.io:6379"
 );
 
 export const addMovieJob = async (data) => {
