@@ -8,7 +8,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { connectDB } from "./src/config/db.js";
-import { startWorker } from "./src/queue/worker.js";
+import { startWorkerWithCron } from "./src/queue/worker.js";
 
 import authRoutes from "./src/routes/authentication.js";
 import movieRoutes from "./src/routes/movie.js";
@@ -17,7 +17,7 @@ import movieRoutes from "./src/routes/movie.js";
 
 await connectDB();
 
-startWorker();
+startWorkerWithCron();
 
 const app = express();
 
