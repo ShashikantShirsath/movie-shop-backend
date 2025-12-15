@@ -11,7 +11,7 @@ export const getMovies = async (req, res) => {
       genre,
     } = req.query;
 
-    const PAGE_SIZE = 15;
+    const PAGE_SIZE = 20;
     const skip = (page - 1) * PAGE_SIZE;
 
     // 🔎 Search + Filter
@@ -65,11 +65,8 @@ export const sortedMovies = async (req, res) => {
 
 export const addMovie = async (req, res) => {
   try {
-    await addMovieJob(req.body);
-
-    res.status(202).json({
-      message: "Movie queued for insertion",
-    });
+    addMovieJob(req.body);
+    res.status(201).json({ message: "Movie added to queue" });
   } catch (error) {
     console.error("Error adding movie:", error.message);
     res.status(500).json({ error: "Server error" });

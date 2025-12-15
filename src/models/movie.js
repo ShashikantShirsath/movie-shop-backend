@@ -16,6 +16,10 @@ const movieSchema = new mongoose.Schema({
   releaseDate: Date,
 });
 
+movieSchema.index({ title: 1 });
+
+movieSchema.index({ createdAt: -1 });
+
 const Movie = mongoose.model("Movie", movieSchema);
 
 export default Movie;

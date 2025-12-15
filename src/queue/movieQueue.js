@@ -2,14 +2,21 @@ import Queue from "bull";
 
 export const movieQueue = new Queue(
   "movie-queue",
-  "rediss://default:AVCVAAIncDE0Yjg4YTNiMWE2NTE0NDc2YTkzZWIyZGIwYjMwYmRmMHAxMjA2Mjk@enormous-bug-20629.upstash.io:6379"
+  process.env.REDIS_URL,
+  {
+    redis: {
+      maxRetriesPerRequest: null,
+      enableReadyCheck: false,
+    },
+    defaultJobOptions: {
+      attempts: 2,
+      backoff: 3000,
+      removeOnComplete: true,
+    },
+  }
 );
 
-export const addMovieJob = async (data) => {
-  return movieQueue.add("add-movie", data, {
-    attempts: 3,
-    backoff: 5000,
-    removeOnComplete: true,
-    removeOnFail: false,
-  });
+export const addMovieJob = (data) => {
+  // fire-and-forget (lazy insertion)
+  movieQueue.add("add-movie", data);
 };
