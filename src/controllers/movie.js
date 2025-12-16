@@ -76,11 +76,11 @@ export const sortedMovies = async (req, res) => {
 export const addMovie = async (req, res) => {
   try {
     // addMovieJob(req.body);
-    const { title, description, rating, duration, releaseDate } = req.body;
+    const { title, description, rating, duration } = req.body;
     if (!title || !description || rating === undefined || duration === undefined) {
       return res.status(400).json({ error: "All fields are required" });
     }
-    const movie = new Movie({ title, description, rating, duration, releaseDate, createdAt: new Date() });
+    const movie = new Movie({ title, description, rating, duration, releaseDate: new Date(), createdAt: new Date() });
     movie.save();
     res.status(201).json({ message: "Movie added to queue", movie });
   } catch (error) {
