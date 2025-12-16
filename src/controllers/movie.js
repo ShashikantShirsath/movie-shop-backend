@@ -12,9 +12,9 @@ export const getMovies = async (req, res) => {
     } = req.query;
 
     const PAGE_SIZE = 20;
-    const skip = (page - 1) * PAGE_SIZE;
+    const pageNumber = Number(page) || 1;
+    const skip = (pageNumber - 1) * PAGE_SIZE;
 
-    // 🔎 Search + Filter
     const query = {
       ...(q && {
         $or: [
@@ -25,10 +25,18 @@ export const getMovies = async (req, res) => {
       ...(genre && { genre }),
     };
 
+    const allowedSortFields = ["createdAt", "rating", "title"];
+    const sortField = allowedSortFields.includes(sortBy)
+      ? sortBy
+      : "createdAt";
+
+    const sortOrder =
+      order?.toLowerCase() === "asc" ? 1 : -1;
+
     const total = await Movie.countDocuments(query);
 
     const movies = await Movie.find(query)
-      .sort({ [sortBy]: order === "asc" ? 1 : -1 })
+      .sort({ [sortField]: sortOrder })
       .skip(skip)
       .limit(PAGE_SIZE);
 
@@ -36,15 +44,17 @@ export const getMovies = async (req, res) => {
       data: movies,
       pagination: {
         total,
-        page: Number(page),
+        page: pageNumber,
         pageSize: PAGE_SIZE,
         totalPages: Math.ceil(total / PAGE_SIZE),
       },
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 export const searchMovies = async (req, res) => {
   const { q } = req.query;
@@ -67,10 +77,10 @@ export const addMovie = async (req, res) => {
   try {
     // addMovieJob(req.body);
     const { title, description, rating, duration, releaseDate } = req.body;
-   if(!title || !description || rating === undefined || duration === undefined) {
+    if (!title || !description || rating === undefined || duration === undefined) {
       return res.status(400).json({ error: "All fields are required" });
     }
-    const movie = new Movie({ title, description, rating, duration, releaseDate });
+    const movie = new Movie({ title, description, rating, duration, releaseDate, createdAt: new Date() });
     movie.save();
     res.status(201).json({ message: "Movie added to queue", movie });
   } catch (error) {

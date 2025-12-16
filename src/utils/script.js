@@ -1,4 +1,5 @@
 import { connectDB } from "../config/db.js";
+import Movie from "../models/movie.js";
 import { addMovieJob } from "../queue/movieQueue.js";
 
 const movies = [
@@ -190,12 +191,19 @@ const seedMovies = async () => {
   await connectDB();
 
   for (const movie of movies) {
-    await addMovieJob(movie);
-    console.log(`📥 Queued: ${movie.title}`);
+     insertMovie(movie);
   }
 
   console.log("✅ All 20 movies added to queue");
   process.exit();
 };
 
+const insertMovie = async (movie) => {
+  try {
+    const newMovie = new Movie(movie);
+    await newMovie.save();
+  } catch (error) {
+    console.error("Error adding movie:", error.message);
+  } 
+}
 seedMovies();
